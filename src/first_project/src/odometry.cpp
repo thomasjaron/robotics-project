@@ -36,7 +36,7 @@ void bag_cb(const geometry_msgs::Quaternion::ConstPtr& msg){
 	// TODO: Get the first time before starting to calculate
 	last_time = new_time;
 	new_time = ros::Time::now().toSec();
-	tdelta = new_time - last_time
+	tdelta = new_time - last_time;
 	if (last_time == 0){
 		tdelta = 0;
 	}
