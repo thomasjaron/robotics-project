@@ -1,0 +1,10 @@
+Automatically generated report
+
+Group members:
+the Mariner, Eärendil, id:0137
+Muad'Dib, Paul, id:00000000000
+
+Code test:
+1.Package succesfully compiled
+2.Publisher started succesfully
+3.Publisher is publishing data

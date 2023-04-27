@@ -1,1 +1,4 @@
 First_project/bags/*
+devel
+build
+*.bag
