@@ -24,8 +24,28 @@ static float cstx = 0;
 static float csty = 0;
 static float cstth = 0;
 
+float speed = 0;
+float steering_angle = 0;
+
+float last_time = 0;
+float new_time = 0;
+float tdelta = 0;
+
 void bag_cb(const geometry_msgs::Quaternion::ConstPtr& msg){
 	ROS_INFO("I heard [%f, %f, %f, %f]", msg->x, msg->y, msg->z, msg->w);
+	// TODO: Get the first time before starting to calculate
+	last_time = new_time;
+	new_time = ros::Time::now().toSec();
+	tdelta = new_time - last_time
+	if (last_time == 0){
+		tdelta = 0;
+	}
+	speed = msg->x;
+	steering_angle += msg->y;
+
+	cstx = cstx + speed * tdelta * sin(steering_angle);
+	csty = csty + speed * tdelta * cos(steering_angle);
+	cstth = steering_angle;
 	return;
 }
 
@@ -37,6 +57,13 @@ bool service_cb(first_project::reset_odom::Request &req, first_project::reset_od
 	orienty = 0;
 	orientz = 0;
 	orientw = 0;
+
+	cstx = 0;
+	csty = 0;
+	cstth = 0;
+
+	steering_angle = 0;
+
 	res.resetted = true;
 	return true;
 }
@@ -101,21 +128,21 @@ int main(int argc, char **argv){
 }
 
 
-class tf_sub_pub {
-	public:
-		tf_sub_pub() {
-			sub = n.subscribe('', 1000, &tf_sub_pub::callback, this);
-		}
-		void callback(const some::ting msg) {
-			tf::Transform transform;
-			transform.setOrigin();
-			tf::Quaternion q;
-			q.setRPY();
-			transform.setRotation(q);
-			br.sendTransform(tf::StampedTransform());
-		}
-	private:
-		ros::NodeHandle n;
-		tf::TransformBroadcaster br;
-		ros::Subscriber sub;
-};
+// class tf_sub_pub {
+// 	public:
+// 		tf_sub_pub() {
+// 			sub = n.subscribe('', 1000, &tf_sub_pub::callback, this);
+// 		}
+// 		void callback(const some::ting msg) {
+// 			tf::Transform transform;
+// 			transform.setOrigin();
+// 			tf::Quaternion q;
+// 			q.setRPY();
+// 			transform.setRotation(q);
+// 			br.sendTransform(tf::StampedTransform());
+// 		}
+// 	private:
+// 		ros::NodeHandle n;
+// 		tf::TransformBroadcaster br;
+// 		ros::Subscriber sub;
+// };
