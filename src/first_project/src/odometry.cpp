@@ -32,18 +32,27 @@ float new_time = 0;
 float tdelta = 0;
 
 void bag_cb(const geometry_msgs::Quaternion::ConstPtr& msg){
-	ROS_INFO("I heard [%f, %f, %f, %f]", msg->x, msg->y, msg->z, msg->w);
+			//ROS_INFO("I heard [%f, %f, %f, %f]", msg->x, msg->y, msg->z, msg->w);
 	// TODO: Get the first time before starting to calculate
-	last_time = new_time;
-	new_time = ros::Time::now().toSec();
-	tdelta = new_time - last_time;
-	if (last_time == 0){
-		tdelta = 0;
-	}
+	
+//	last_time = new_time;
+//	new_time = ros::Time::now().toSec();
+//	tdelta = new_time - last_time;
+	
+//	if (last_time == 0){
+//		tdelta = 0;
+//	}
 	speed = msg->x;
 	steering_angle += msg->y;
 
-	cstx = cstx + speed * tdelta * sin(steering_angle);
+
+	ROS_INFO("lasttime : [%f]", last_time);
+	ROS_INFO("newtime : [%f]", new_time);
+	ROS_INFO("TDELTA : [%f]", tdelta);
+	
+	
+	
+	cstx = cstx + speed *  sin(steering_angle);   //I try to multiply by tdelta in the main loop     *tdelta 
 	csty = csty + speed * tdelta * cos(steering_angle);
 	cstth = steering_angle;
 	return;
@@ -90,25 +99,48 @@ int main(int argc, char **argv){
 	// Advertise the reset service
 	ros::ServiceServer service = n.advertiseService("reset_odom", service_cb);
 
-	ros::Rate loop_rate(10);
+	ros::Rate loop_rate(1000);
+  
 
 	// Fill the values with our default parameters (normally 0)
+
+	//We iniate our times Values and makeTdelta=0
+
+		ros::Time timestamp= ros::Time::now();;
+		ros::Time previous_timestamp= ros::Time::now();;
+		ros::Duration tdelta_ROS = timestamp-previous_timestamp;
+		std::stringstream tdelta;                                 //still a str we may have to switch for an int
+
 	while (ros::ok()){
 		// define messages that we will send
 		nav_msgs::Odometry msg;
 		first_project::Odom cst_msg;
 
 		// For the time to work, we need to have a clock server(?)
-		std::stringstream timestamp;
-		ROS_INFO("%f", ros::Time::now().toSec());
-		timestamp << std::to_string(ros::Time::now().toSec());
 
-		cst_msg.x = cstx;
-		cst_msg.y = csty;
-		cst_msg.th = cstth;
-		cst_msg.timestamp = timestamp.str();
+		
 
-		msg.pose.pose.position.x = posx;
+		//ROS_INFO("%f", ros::Time::now().toSec());
+
+
+
+		timestamp = ros::Time::now();
+		tdelta_ROS = timestamp -previous_timestamp;      
+		previous_timestamp=timestamp;
+		ROS_INFO("Duration in seconds: %lf", tdelta_ROS.toSec());
+		
+		
+		//cst_msg.x = cst_msg.x + speed * tdelta * sin(steering_angle);
+
+
+
+		cst_msg.x = cstx*tdelta_ROS.toSec();
+		cst_msg.y = csty;                           //so here i use csty that comes from    bag_cb   :     
+ 		cst_msg.th = cstth;										//Question is how can i update cst_msg.y with the value i will cupute here
+		cst_msg.timestamp =   std::to_string(ros::Time::now().toSec())    ;
+		
+
+		msg.pose.pose.position.x = cstx;
 		msg.pose.pose.position.y = posy;
 		msg.pose.pose.orientation.x = orientx;
 		msg.pose.pose.orientation.y = orienty;
