@@ -2,3 +2,6 @@ First_project/bags/*
 devel
 build
 *.bag
+
+.vscode
+.catkin_workspace
