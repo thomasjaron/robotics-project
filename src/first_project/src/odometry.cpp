@@ -139,10 +139,10 @@ int main(int argc, char **argv){
 
 		msg.pose.pose.position.x = cstx;
 		msg.pose.pose.position.y = csty;
-		msg.pose.pose.orientation.x = orientx;
-		msg.pose.pose.orientation.y = orienty;
-		msg.pose.pose.orientation.z = orientz;
-		msg.pose.pose.orientation.w = orientw;
+		msg.pose.pose.orientation.x = q.getX();
+		msg.pose.pose.orientation.y = q.getY();
+		msg.pose.pose.orientation.z = q.getZ();
+		msg.pose.pose.orientation.w = q.getW();
 
 		odom_pub.publish(msg);
 		cst_odom_pub.publish(cst_msg);
