@@ -23,7 +23,7 @@ static float cstx = 0;
 static float csty = 0;
 static float cstth = 0;
 
-static int LOOP_RATE = 1000;
+static int LOOP_RATE = 100;
 
 // The distance between front and rear wheels
 const float d = 2.8;
