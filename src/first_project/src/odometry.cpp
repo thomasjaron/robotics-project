@@ -23,7 +23,7 @@ static float cstx = 0;
 static float csty = 0;
 static float cstth = 0;
 
-static int LOOP_RATE = 100;
+static int LOOP_RATE = 10;
 
 // The distance between front and rear wheels
 const float d = 2.8;
@@ -59,12 +59,12 @@ void bag_cb(const geometry_msgs::Quaternion::ConstPtr& msg){
 	float omega = speed * tan(steering_angle) / d;
 	ROS_INFO("OMEGA : [%f]", omega);
 
-	if (abs(omega) < 0.001) { // TODO: Change to 0 + a small epsilon > abs(omega)
+	if (abs(omega) < 0.1) {
 		ROS_INFO("OMEGA IS 0");
 		cstx += speed * tdelta * cos(cstth + omega * tdelta / 2); 
 		csty += speed * tdelta * sin(cstth + omega * tdelta / 2);
 	} else {
-	// NOTE: If we have omega ~ 0, we need to use the runge-kutta approximation instead
+	// If we have omega ~ 0, we need to use the runge-kutta approximation instead
 		cstx += (speed / omega) * (sin(cstth + omega * tdelta) - sin(cstth)); 
 		csty += (speed / omega) * (cos(cstth + omega * tdelta) - cos(cstth));
 		cstth += omega * tdelta; // angular velocity (angle / s) * time in seconds -> new angle
