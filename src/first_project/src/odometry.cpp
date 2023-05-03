@@ -56,11 +56,6 @@ void bag_cb(const geometry_msgs::Quaternion::ConstPtr& msg){
 	float speed = msg->x;
 	float steering_angle = msg->y;
 
-	float R = 0;
-	float angular_velocity = 0;
-
-	R = d / tan(steering_angle); // distance from the center of the car to the ICC
-
 	float omega = speed * tan(steering_angle) / d;
 	ROS_INFO("OMEGA : [%f]", omega);
 
